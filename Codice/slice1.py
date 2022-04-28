@@ -18,8 +18,8 @@ class SimpleSwitch(app_manager.RyuApp):
         super(SimpleSwitch, self).__init__(*args, **kwargs)
         self.mac_to_port = {}
         self.slice_to_port = {
-            1: {1:3, 2:0, 3:1, 4:0},
-            3: {1:3, 2:0, 3:1, 4:0}
+            1: {3:1, 2:4, 1:3, 4:2},
+            3: {1:3, 2:4, 3:1, 4:2}
         }
         self.end_switches = [1, 3]
 
@@ -55,15 +55,15 @@ class SimpleSwitch(app_manager.RyuApp):
         dpid = datapath.id
         self.mac_to_port.setdefault(dpid, {})
 
-        self.logger.info("packet in %s %s %s %s", dpid, src, dst, msg.in_port)
+       # self.logger.info("packet in %s %s %s %s", dpid, src, dst, msg.in_port)
 
         # learn a mac address to avoid FLOOD next time.
         self.mac_to_port[dpid][src] = msg.in_port
 
         out_port = 0
 
-        #if (dpid == 1 and msg.in_port == 1 and dst != "00:00:00:00:00:01") or (dpid == 3 and msg.in_port == 1 and dst != "00:00:00:00:00:04"):
-        #    return
+        # if (dpid == 1 and msg.in_port == 1 and dst != "00:00:00:00:00:01") or (dpid == 3 and msg.in_port == 1 and dst != "00:00:00:00:00:04"):
+        #     return
 
         if dpid in self.end_switches:
             out_port = self.slice_to_port[dpid][msg.in_port]
@@ -91,7 +91,7 @@ class SimpleSwitch(app_manager.RyuApp):
         datapath.send_msg(out)
 
         if out_port!=0:
-            self.logger.info("LOG s%s sending packet (out_port=%s)", dpid, out_port)
+           # self.logger.info("LOG s%s sending packet (out_port=%s)", dpid, out_port)
             datapath.send_msg(out)
 
     @set_ev_cls(ofp_event.EventOFPPortStatus, MAIN_DISPATCHER)
