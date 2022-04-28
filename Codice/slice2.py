@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+ 
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import MAIN_DISPATCHER
@@ -18,8 +20,8 @@ class SimpleSwitch(app_manager.RyuApp):
         super(SimpleSwitch, self).__init__(*args, **kwargs)
         self.mac_to_port = {}
         self.slice_to_port = {
-            2: {1:0, 2:4, 3:0, 4:2},
-            4: {1:0, 2:4, 3:0, 4:2}
+            1: {1:0, 2:4, 3:0, 4:2},
+            3: {1:0, 2:4, 3:0, 4:2}
         }
         self.end_switches = [1, 3]
 
