@@ -18,8 +18,8 @@ class SimpleSwitch(app_manager.RyuApp):
         super(SimpleSwitch, self).__init__(*args, **kwargs)
         self.mac_to_port = {}
         self.slice_to_port = {
-            1: {1:3, 2:0, 3:1, 4:0},
-            3: {1:3, 2:0, 3:1, 4:0}
+            2: {1:0, 2:4, 3:0, 4:2},
+            4: {1:0, 2:4, 3:0, 4:2}
         }
         self.end_switches = [1, 3]
 
@@ -62,7 +62,7 @@ class SimpleSwitch(app_manager.RyuApp):
 
         out_port = 0
 
-        #if (dpid == 1 and msg.in_port == 1 and dst != "00:00:00:00:00:01") or (dpid == 3 and msg.in_port == 1 and dst != "00:00:00:00:00:04"):
+        #if (dpid == 1 and msg.in_port == 2 and dst != "00:00:00:00:00:05") or (dpid == 3 and msg.in_port == 2 and dst != "00:00:00:00:00:07"):
         #    return
 
         if dpid in self.end_switches:
