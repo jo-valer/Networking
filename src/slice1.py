@@ -3,7 +3,7 @@ from ryu.controller import ofp_event
 from ryu.topology import event,switches
 from ryu.controller.handler import MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
-from ryu.ofproto import ofproto_v1_0
+from ryu.ofproto import ofproto_v1_0,ofproto_v1_0_parser
 from ryu.lib.mac import haddr_to_bin
 from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
@@ -26,6 +26,8 @@ class SimpleSwitch(app_manager.RyuApp):
         self.end_switches = [1, 3]
         self.switches = []
         self.datapath_list = {} 
+        self.rx_bytes1 = 0
+        self.rx_bytes2 = 0
 
     def add_flow(self, datapath, in_port, dst, src, actions):
         ofproto = datapath.ofproto
@@ -42,17 +44,51 @@ class SimpleSwitch(app_manager.RyuApp):
         datapath.send_msg(mod)
 
     def run_check(self, ofp_parser, switch_dp):
-       # threading.Timer(1.0, self.run_check, args=(ofp_parser, switch_dp)).start()
+        threading.Timer(10.0, self.run_check, args=(ofp_parser, switch_dp)).start()
         
-        req = ofp_parser.OFPPortStatsRequest(switch_dp,0,[1,2,3,4]  ) 
-        #self.logger.info(f"Port Stats Request has been sent for sw: {switch} !")
-        #switch_dp.send_msg(req)
-        print("req:  ")
-        print(req  , type(req))
+        req = ofp_parser.OFPPortStatsRequest(switch_dp,0,1) 
+        switch_dp.send_msg(req)
 
+        req = ofp_parser.OFPPortStatsRequest(switch_dp,0,2) 
+        switch_dp.send_msg(req)
+    
+    @set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
+    def _port_stats_reply_handler(self, ev):
+        body = ev.msg.body
+        
+        # self.logger.info('datapath         port     '
+        #                  'rx-pkts  rx-bytes rx-error '
+        #                  'tx-pkts  tx-bytes tx-error')
+        # self.logger.info('---------------- -------- '
+        #                  '-------- -------- -------- '
+        #                  '-------- -------- --------')
+        # for stat in body:
+        #     self.logger.info('%016x %8x %8d %8d %8d %8d %8d %8d',
+        #                      ev.msg.datapath.id, stat.port_no,
+        #                      stat.rx_packets, stat.rx_bytes, stat.rx_errors,
+        #                      stat.tx_packets, stat.tx_bytes, stat.tx_errors)
+
+        
+        for stat in body:
+            if stat.port_no == 1:
+                rx_old1 = self.rx_bytes1
+                self.rx_bytes1 = stat.rx_bytes
+                print(stat.port_no)
+                print(self.rx_bytes1 - rx_old1)
+                print("------------------")
+
+            if stat.port_no == 2:
+                rx_old2 = self.rx_bytes2
+                self.rx_bytes2 = stat.rx_bytes
+                print(stat.port_no)
+                print(self.rx_bytes2 - rx_old2)
+                print("------------------")
+        
+        
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
         msg = ev.msg
+        
         datapath = msg.datapath
         ofproto = datapath.ofproto
 
@@ -118,9 +154,9 @@ class SimpleSwitch(app_manager.RyuApp):
             
         if switch_dpid not in self.switches:
             self.datapath_list[switch_dpid] = switch_dp
-            self.switches.append(switch_dpid)
-
-            self.run_check(ofp_parser, switch_dp)  #Funkcja watkowa dzialajace w tle co 1s
+            if(switch_dpid == 2):
+                self.switches.append(switch_dpid)
+                self.run_check(ofp_parser, switch_dp)  #Funkcja watkowa dzialajace w tle co 1s
        # self.run_check(ofp_parser, switch_dp)
 
     @set_ev_cls(ofp_event.EventOFPPortStatus, MAIN_DISPATCHER)
