@@ -42,13 +42,13 @@ class SimpleSwitch(app_manager.RyuApp):
         datapath.send_msg(mod)
 
     def run_check(self, ofp_parser, switch_dp):
-        threading.Timer(1.0, self.run_check, args=(ofp_parser, switch_dp)).start()
+       # threading.Timer(1.0, self.run_check, args=(ofp_parser, switch_dp)).start()
         
         req = ofp_parser.OFPPortStatsRequest(switch_dp,0,[1,2,3,4]  ) 
         #self.logger.info(f"Port Stats Request has been sent for sw: {switch} !")
         #switch_dp.send_msg(req)
         print("req: ")
-        print(req , type(req))
+        print(req  , type(req))
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
@@ -108,7 +108,7 @@ class SimpleSwitch(app_manager.RyuApp):
             datapath.send_msg(out)
 
    
-    @set_ev_cls(event.EventSwitchEnter)
+    @set_ev_cls(event.EventSwitchBase)
     def switch_enter_handler(self, ev):
         switch_dp = ev.switch.dp
         switch_dpid = switch_dp.id
@@ -116,11 +116,12 @@ class SimpleSwitch(app_manager.RyuApp):
         
         self.logger.info(f"Switch has been plugged in PID: {switch_dpid}")
             
-        if switch_dpid not in self.switches:
-            self.datapath_list[switch_dpid] = switch_dp
-            self.switches.append(switch_dpid)
+        # if switch_dpid not in self.switches:
+        #     self.datapath_list[switch_dpid] = switch_dp
+        #     self.switches.append(switch_dpid)
 
-            self.run_check(ofp_parser, switch_dp)  #Funkcja watkowa dzialajace w tle co 1s
+        #     self.run_check(ofp_parser, switch_dp)  #Funkcja watkowa dzialajace w tle co 1s
+        self.run_check(ofp_parser, switch_dp)
 
     @set_ev_cls(ofp_event.EventOFPPortStatus, MAIN_DISPATCHER)
     def _port_status_handler(self, ev):
