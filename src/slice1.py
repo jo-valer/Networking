@@ -44,7 +44,7 @@ class SimpleSwitch(app_manager.RyuApp):
     def run_check(self, ofp_parser, switch_dp):
         threading.Timer(1.0, self.run_check, args=(ofp_parser, switch_dp)).start()
         
-        req = ofp_parser.OFPPortStatsRequest(switch_dp,0,OFPP_NONE) 
+        req = ofp_parser.OFPPortStatsRequest(switch_dp,0,[1,2,3,4]  ) 
         #self.logger.info(f"Port Stats Request has been sent for sw: {switch} !")
         #switch_dp.send_msg(req)
         print("req: ")
