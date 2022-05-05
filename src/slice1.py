@@ -47,7 +47,7 @@ class SimpleSwitch(app_manager.RyuApp):
         req = ofp_parser.OFPPortStatsRequest(switch_dp,0,[1,2,3,4]  ) 
         #self.logger.info(f"Port Stats Request has been sent for sw: {switch} !")
         #switch_dp.send_msg(req)
-        print("req: ")
+        print("req:  ")
         print(req  , type(req))
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
