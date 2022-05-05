@@ -108,7 +108,7 @@ class SimpleSwitch(app_manager.RyuApp):
             datapath.send_msg(out)
 
    
-    @set_ev_cls(event.EventSwitchBase)
+    @set_ev_cls(event.EventSwitchEnter)
     def switch_enter_handler(self, ev):
         switch_dp = ev.switch.dp
         switch_dpid = switch_dp.id
@@ -116,12 +116,12 @@ class SimpleSwitch(app_manager.RyuApp):
         
         self.logger.info(f"Switch has been plugged in PID: {switch_dpid}")
             
-        # if switch_dpid not in self.switches:
-        #     self.datapath_list[switch_dpid] = switch_dp
-        #     self.switches.append(switch_dpid)
+        if switch_dpid not in self.switches:
+            self.datapath_list[switch_dpid] = switch_dp
+            self.switches.append(switch_dpid)
 
-        #     self.run_check(ofp_parser, switch_dp)  #Funkcja watkowa dzialajace w tle co 1s
-        self.run_check(ofp_parser, switch_dp)
+            self.run_check(ofp_parser, switch_dp)  #Funkcja watkowa dzialajace w tle co 1s
+       # self.run_check(ofp_parser, switch_dp)
 
     @set_ev_cls(ofp_event.EventOFPPortStatus, MAIN_DISPATCHER)
     def _port_status_handler(self, ev):
