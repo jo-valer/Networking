@@ -1,5 +1,6 @@
 from ryu.base import app_manager
 from ryu.controller import ofp_event
+from ryu.topology import event,switches
 from ryu.controller.handler import MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_0
@@ -8,7 +9,7 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 from ryu.lib.packet import ether_types
 import threading
-
+import os
 
 class SimpleSwitch(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_0.OFP_VERSION]
@@ -23,6 +24,8 @@ class SimpleSwitch(app_manager.RyuApp):
             3: {1:3, 2:4, 3:1, 4:2}
         }
         self.end_switches = [1, 3]
+        self.switches = []
+        self.datapath_list = {} 
 
     def add_flow(self, datapath, in_port, dst, src, actions):
         ofproto = datapath.ofproto
@@ -41,9 +44,11 @@ class SimpleSwitch(app_manager.RyuApp):
     def run_check(self, ofp_parser, switch_dp):
         threading.Timer(1.0, self.run_check, args=(ofp_parser, switch_dp)).start()
         
-        req = ofp_parser.OFPPortStatsRequest(switch_dp) 
+        req = ofp_parser.OFPPortStatsRequest(switch_dp,0,OFPP_NONE) 
         #self.logger.info(f"Port Stats Request has been sent for sw: {switch} !")
-        switch_dp.send_msg(req)
+        #switch_dp.send_msg(req)
+        print("req: ")
+        print(req , type(req))
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
@@ -101,6 +106,21 @@ class SimpleSwitch(app_manager.RyuApp):
         if out_port!=0:
            # self.logger.info("LOG s%s sending packet (out_port=%s)", dpid, out_port)
             datapath.send_msg(out)
+
+   
+    @set_ev_cls(event.EventSwitchEnter)
+    def switch_enter_handler(self, ev):
+        switch_dp = ev.switch.dp
+        switch_dpid = switch_dp.id
+        ofp_parser = switch_dp.ofproto_parser
+        
+        self.logger.info(f"Switch has been plugged in PID: {switch_dpid}")
+            
+        if switch_dpid not in self.switches:
+            self.datapath_list[switch_dpid] = switch_dp
+            self.switches.append(switch_dpid)
+
+            self.run_check(ofp_parser, switch_dp)  #Funkcja watkowa dzialajace w tle co 1s
 
     @set_ev_cls(ofp_event.EventOFPPortStatus, MAIN_DISPATCHER)
     def _port_status_handler(self, ev):
