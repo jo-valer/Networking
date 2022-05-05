@@ -7,6 +7,7 @@ from ryu.lib.mac import haddr_to_bin
 from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 from ryu.lib.packet import ether_types
+import threading
 
 
 class SimpleSwitch(app_manager.RyuApp):
@@ -36,6 +37,13 @@ class SimpleSwitch(app_manager.RyuApp):
             priority=ofproto.OFP_DEFAULT_PRIORITY,
             flags=ofproto.OFPFF_SEND_FLOW_REM, actions=actions)
         datapath.send_msg(mod)
+
+    def run_check(self, ofp_parser, switch_dp):
+        threading.Timer(1.0, self.run_check, args=(ofp_parser, switch_dp)).start()
+        
+        req = ofp_parser.OFPPortStatsRequest(switch_dp) 
+        #self.logger.info(f"Port Stats Request has been sent for sw: {switch} !")
+        switch_dp.send_msg(req)
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
