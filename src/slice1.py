@@ -156,7 +156,7 @@ class SimpleSwitch(app_manager.RyuApp):
             self.datapath_list[switch_dpid] = switch_dp
             if(switch_dpid == 2):
                 self.switches.append(switch_dpid)
-                self.run_check(ofp_parser, switch_dp)  #Funkcja watkowa dzialajace w tle co 1s
+                self.run_check(ofp_parser, switch_dp)  
        # self.run_check(ofp_parser, switch_dp)
 
     @set_ev_cls(ofp_event.EventOFPPortStatus, MAIN_DISPATCHER)
