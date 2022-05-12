@@ -1,3 +1,5 @@
+from pickle import FALSE
+from ssl import OP_ENABLE_MIDDLEBOX_COMPAT
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.topology import event,switches
@@ -18,6 +20,7 @@ class SimpleSwitch(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(SimpleSwitch, self).__init__(*args, **kwargs)
+        self.exchange = False
         self.mac_to_port = {}
         self.slice_to_port = {
             1: {3:1, 2:4, 1:3, 4:2},
@@ -25,8 +28,8 @@ class SimpleSwitch(app_manager.RyuApp):
         }
         self.end_switches = [1, 3]
         self.switches = []
-        self.datapath_list = {} 
-        self.rx_bytes1 = 0
+        self.datapath_list = {}
+        self.rx_bytes4 = 0
         self.rx_bytes2 = 0
 
     def add_flow(self, datapath, in_port, dst, src, actions):
@@ -46,16 +49,23 @@ class SimpleSwitch(app_manager.RyuApp):
     def run_check(self, ofp_parser, switch_dp):
         threading.Timer(10.0, self.run_check, args=(ofp_parser, switch_dp)).start()
         
-        req = ofp_parser.OFPPortStatsRequest(switch_dp,0,1) 
-        switch_dp.send_msg(req)
+        if(switch_dp.id == 2):
+            req = ofp_parser.OFPPortStatsRequest(switch_dp,0,switch_dp.ofproto.OFPP_NONE)
+            switch_dp.send_msg(req)
 
-        req = ofp_parser.OFPPortStatsRequest(switch_dp,0,2) 
-        switch_dp.send_msg(req)
-    
+        else:
+            req = ofp_parser.OFPPortStatsRequest(switch_dp,0,switch_dp.ofproto.OFPP_NONE)
+            switch_dp.send_msg(req)
+
+            
+
+       
+
+
     @set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
     def _port_stats_reply_handler(self, ev):
         body = ev.msg.body
-        
+
         # self.logger.info('datapath         port     '
         #                  'rx-pkts  rx-bytes rx-error '
         #                  'tx-pkts  tx-bytes tx-error')
@@ -68,27 +78,53 @@ class SimpleSwitch(app_manager.RyuApp):
         #                      stat.rx_packets, stat.rx_bytes, stat.rx_errors,
         #                      stat.tx_packets, stat.tx_bytes, stat.tx_errors)
 
-        
-        for stat in body:
-            if stat.port_no == 1:
-                rx_old1 = self.rx_bytes1
-                self.rx_bytes1 = stat.rx_bytes
-                print(stat.port_no)
-                print(self.rx_bytes1 - rx_old1)
-                print("------------------")
 
-            if stat.port_no == 2:
-                rx_old2 = self.rx_bytes2
-                self.rx_bytes2 = stat.rx_bytes
-                print(stat.port_no)
-                print(self.rx_bytes2 - rx_old2)
-                print("------------------")
+       
         
         
+        
+        oldrx2 = 0
+        oldrx4 = 0
+        for stat in body:
+            
+            if ev.msg.datapath.id == 2:
+                if stat.port_no == 1:
+                    oldrx2 = self.rx_bytes2
+                    self.rx_bytes2 = 0
+                    
+
+                self.rx_bytes2 += stat.rx_bytes
+                
+            if ev.msg.datapath.id == 4:
+               # self.rx_bytes2 += stat.rx_bytes
+                if stat.port_no == 1:
+                    oldrx4 = self.rx_bytes4
+                    self.rx_bytes4 = 0
+
+                self.rx_bytes4 += stat.rx_bytes
+
+        traffic2 = self.rx_bytes2 - oldrx2
+        traffic4 = self.rx_bytes4 - oldrx4
+        if traffic2 > traffic4 :
+            self.exchange = True
+        else :
+            self.exchange = False
+        if ev.msg.datapath.id == 2:
+            print("Traffico switch 2: ", traffic2)
+        else:
+            print("Traffico switch 4: ", traffic4)
+        
+        print("---------------------------------")
+
+
+
+
+
+
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
         msg = ev.msg
-        
+
         datapath = msg.datapath
         ofproto = datapath.ofproto
 
@@ -115,6 +151,17 @@ class SimpleSwitch(app_manager.RyuApp):
         #     return
 
         if dpid in self.end_switches:
+           #qui mettiamo le cose 
+            if self.exchange:
+                self.slice_to_port= {
+                    1: {3:1, 2:4, 1:3, 4:2},
+                    3: {1:3, 2:4, 3:1, 4:2}
+                }
+            else:
+                self.slice_to_port= {
+                    1: {3:1, 2:4, 1:3, 4:2},
+                    3: {1:3, 2:4, 3:1, 4:2}
+                }
             out_port = self.slice_to_port[dpid][msg.in_port]
         elif dpid in self.mac_to_port:
             if dst in self.mac_to_port[dpid]:
@@ -143,20 +190,20 @@ class SimpleSwitch(app_manager.RyuApp):
            # self.logger.info("LOG s%s sending packet (out_port=%s)", dpid, out_port)
             datapath.send_msg(out)
 
-   
+
     @set_ev_cls(event.EventSwitchEnter)
     def switch_enter_handler(self, ev):
         switch_dp = ev.switch.dp
         switch_dpid = switch_dp.id
         ofp_parser = switch_dp.ofproto_parser
-        
+
         self.logger.info(f"Switch has been plugged in PID: {switch_dpid}")
-            
+
         if switch_dpid not in self.switches:
             self.datapath_list[switch_dpid] = switch_dp
-            if(switch_dpid == 2):
+            if(switch_dpid == 2 or switch_dpid == 4 ):
                 self.switches.append(switch_dpid)
-                self.run_check(ofp_parser, switch_dp)  
+                self.run_check(ofp_parser, switch_dp)
        # self.run_check(ofp_parser, switch_dp)
 
     @set_ev_cls(ofp_event.EventOFPPortStatus, MAIN_DISPATCHER)
