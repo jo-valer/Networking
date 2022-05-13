@@ -29,8 +29,7 @@ class SimpleSwitch(app_manager.RyuApp):
         self.end_switches = [1, 3]
         self.switches = []
         self.datapath_list = {}
-        self.rx_bytes4 = 0
-        self.rx_bytes2 = 0
+        self.rx_bytes = {}
 
     def add_flow(self, datapath, in_port, dst, src, actions):
         ofproto = datapath.ofproto
@@ -65,7 +64,6 @@ class SimpleSwitch(app_manager.RyuApp):
     @set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
     def _port_stats_reply_handler(self, ev):
         body = ev.msg.body
-
         # self.logger.info('datapath         port     '
         #                  'rx-pkts  rx-bytes rx-error '
         #                  'tx-pkts  tx-bytes tx-error')
@@ -77,48 +75,17 @@ class SimpleSwitch(app_manager.RyuApp):
         #                      ev.msg.datapath.id, stat.port_no,
         #                      stat.rx_packets, stat.rx_bytes, stat.rx_errors,
         #                      stat.tx_packets, stat.tx_bytes, stat.tx_errors)
-
-
-       
-        
-        
-        
-        oldrx2 = 0
-        oldrx4 = 0
+        oldrx = 0
+        dp_id = ev.msg.datapath.id
         for stat in body:
-            
-            if ev.msg.datapath.id == 2:
-                if stat.port_no == 1:
-                    oldrx2 = self.rx_bytes2
-                    self.rx_bytes2 = 0
-                    
+            if stat.port_no == 1:
+                oldrx = self.rx_bytes[dp_id]
+                self.rx_bytes[dp_id] = 0
+            self.rx_bytes[dp_id] += stat.rx_bytes
 
-                self.rx_bytes2 += stat.rx_bytes
-                
-            if ev.msg.datapath.id == 4:
-               # self.rx_bytes2 += stat.rx_bytes
-                if stat.port_no == 1:
-                    oldrx4 = self.rx_bytes4
-                    self.rx_bytes4 = 0
-
-                self.rx_bytes4 += stat.rx_bytes
-
-        traffic2 = self.rx_bytes2 - oldrx2
-        traffic4 = self.rx_bytes4 - oldrx4
-        if traffic2 > traffic4 :
-            self.exchange = True
-        else :
-            self.exchange = False
-        if ev.msg.datapath.id == 2:
-            print("Traffico switch 2: ", traffic2)
-        else:
-            print("Traffico switch 4: ", traffic4)
-        
+        traffic = self.rx_bytes[dp_id] - oldrx
+        print("Traffic monitoring across switch",dp_id,"=",traffic,"bytes")
         print("---------------------------------")
-
-
-
-
 
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
@@ -152,16 +119,16 @@ class SimpleSwitch(app_manager.RyuApp):
 
         if dpid in self.end_switches:
            #qui mettiamo le cose 
-            if self.exchange:
-                self.slice_to_port= {
-                    1: {3:1, 2:4, 1:3, 4:2},
-                    3: {1:3, 2:4, 3:1, 4:2}
-                }
-            else:
-                self.slice_to_port= {
-                    1: {3:1, 2:4, 1:3, 4:2},
-                    3: {1:3, 2:4, 3:1, 4:2}
-                }
+            # if self.exchange:
+            #     self.slice_to_port= {
+            #         1: {3:1, 2:4, 1:3, 4:2},
+            #         3: {1:3, 2:4, 3:1, 4:2}
+            #     }
+            # else:
+            #     self.slice_to_port= {
+            #         1: {3:1, 2:4, 1:3, 4:2},
+            #         3: {1:3, 2:4, 3:1, 4:2}
+            #     }
             out_port = self.slice_to_port[dpid][msg.in_port]
         elif dpid in self.mac_to_port:
             if dst in self.mac_to_port[dpid]:
@@ -201,6 +168,7 @@ class SimpleSwitch(app_manager.RyuApp):
 
         if switch_dpid not in self.switches:
             self.datapath_list[switch_dpid] = switch_dp
+            self.rx_bytes[switch_dpid] = 0
             if(switch_dpid == 2 or switch_dpid == 4 ):
                 self.switches.append(switch_dpid)
                 self.run_check(ofp_parser, switch_dp)
@@ -220,4 +188,4 @@ class SimpleSwitch(app_manager.RyuApp):
         elif reason == ofproto.OFPPR_MODIFY:
             self.logger.info("port modified %s", port_no)
         else:
-            self.logger.info("Illeagal port state %s %s", port_no, reason)
+            self.logger.info("Illegal port state %s %s", port_no, reason)

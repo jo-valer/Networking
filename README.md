@@ -8,4 +8,16 @@ Softwarized and virtualized mobile networks (aka Networking II) group project's 
 • Example 1: migrate a server to maximize throughtput via northbound script
 
 • Example 2: migrate a server to minimize delay via northbound script
+### Launch
+````
+ryu-manager slice1.py &
+sudo python3 network.py
+````
+### Shut down network
+````
+exit
+sudo mn -c
+````
+
+
 
