@@ -75,12 +75,10 @@ class SimpleSwitch(app_manager.RyuApp):
         #                      ev.msg.datapath.id, stat.port_no,
         #                      stat.rx_packets, stat.rx_bytes, stat.rx_errors,
         #                      stat.tx_packets, stat.tx_bytes, stat.tx_errors)
-        oldrx = 0
         dp_id = ev.msg.datapath.id
+        oldrx = self.rx_bytes[dp_id]
+        self.rx_bytes[dp_id] = 0
         for stat in body:
-            if stat.port_no == 1:
-                oldrx = self.rx_bytes[dp_id]
-                self.rx_bytes[dp_id] = 0
             self.rx_bytes[dp_id] += stat.rx_bytes
 
         traffic = self.rx_bytes[dp_id] - oldrx
