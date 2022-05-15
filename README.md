@@ -26,6 +26,7 @@ dump // process ID in linux and eth address
 h1 ifconfig 
 h1 ls // working directory
 h1 ping -c3 h4 // ping 3 packets
+dpctl dump-flows // show flow tables
 ````
 
 

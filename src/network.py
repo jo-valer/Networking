@@ -15,7 +15,7 @@ class NetworkSlicingTopo(Topo):
         
         # Create template host, switch, and link
         host_config = dict(inNamespace=True)
-        http_link_config = dict(bw=1)
+        http_link_config = dict(bw=10)
         video_link_config = dict(bw=10)
         host_link_config = dict()
 
@@ -43,7 +43,6 @@ class NetworkSlicingTopo(Topo):
         self.addLink("h5", "s1", **host_link_config)
         self.addLink("h6", "s4", **host_link_config)
         self.addLink("h7", "s3", **host_link_config)
-
 
 topos = {"networkslicingtopo": (lambda: NetworkSlicingTopo())}
 
