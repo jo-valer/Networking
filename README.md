@@ -4,7 +4,9 @@ Softwarized and virtualized mobile networks (aka Networking II) group project's 
 ### Morphing network slices
 
 • GOAL: to enable RYU SDN controller to build network slices and dynamically modify their topology
+
 • To consider that each network node might host«services», that in this case will be represented by virtual switches/routers
+
 • The SDN controller will not only slice but reprogram connectivity within the slice
 
 ### Launch
