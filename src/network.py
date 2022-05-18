@@ -15,9 +15,9 @@ class NetworkSlicingTopo(Topo):
         
         # Create template host, switch, and link
         host_config = dict(inNamespace=True)
-        http_link_config = dict(bw=10)
-        video_link_config = dict(bw=10)
-        host_link_config = dict()
+        http_link_config = dict()
+       # video_link_config = dict(bw=5)
+        host_link_config = dict(bw = 10)
 
         # Create switch nodes
         for i in range(4):
@@ -28,10 +28,9 @@ class NetworkSlicingTopo(Topo):
         
         for i in range(7):
             self.addHost("h%d" % (i + 1), **host_config)
-
         # Add switch links
-        self.addLink("s1", "s2", **video_link_config)
-        self.addLink("s2", "s3", **video_link_config)
+        self.addLink("s1", "s2", **http_link_config)
+        self.addLink("s2", "s3", **http_link_config)
         self.addLink("s3", "s4", **http_link_config)
         self.addLink("s4", "s1", **http_link_config)
 
@@ -50,14 +49,15 @@ if __name__ == "__main__":
     topo = NetworkSlicingTopo()
     net = Mininet(
         topo=topo,
+        controller = RemoteController("c0", ip="127.0.0.1"),
         switch=OVSKernelSwitch,
         build=False,
         autoSetMacs=True,
         autoStaticArp=True,
         link=TCLink,
     )
-    controller = RemoteController("c1", ip="127.0.0.1", port=6633)
-    net.addController(controller)
+    # controller = RemoteController("c1", ip="127.0.0.1", port=6633)
+    # net.addController(controller)
     net.build()
     net.start()
     CLI(net)

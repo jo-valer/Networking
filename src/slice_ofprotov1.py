@@ -23,7 +23,9 @@ class SimpleSwitch(app_manager.RyuApp):
     def __init__(self, *args, **kwargs):
         super(SimpleSwitch, self).__init__(*args, **kwargs)
         self.exchange = False
-        
+        self.host_slice1_right = ["00:00:00:00:00:02","00:00:00:00:00:03","00:00:00:00:00:04"]
+        self.host_slice1_left = ["00:00:00:00:00:01","00:00:00:00:00:02","00:00:00:00:00:03"] 
+        self.host_slice2 = ["00:00:00:00:00:05","00:00:00:00:00:06","00:00:00:00:00:07"] 
         self.mac_to_port = {
             1: {"00:00:00:00:00:05":4, "00:00:00:00:00:07":1},
             3: {"00:00:00:00:00:05":1, "00:00:00:00:00:07":4},
@@ -131,7 +133,23 @@ class SimpleSwitch(app_manager.RyuApp):
         else:
             out_port = ofproto.OFPP_FLOOD
 
-        actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
+        # Deciding if queue is necessary 
+        if dpid == 1 and self.on_off is False:
+            if dst in self.host_slice1_right:
+                actions = [datapath.ofproto_parser.OFPActionEnqueue(out_port,123)]
+            elif dst == "00:00:00:00:00:07":        
+                actions = [datapath.ofproto_parser.OFPActionEnqueue(out_port,234)]
+            else:
+                actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
+        elif dpid == 3 and self.on_off is False:
+            if dst in self.host_slice1_left:
+                actions = [datapath.ofproto_parser.OFPActionEnqueue(out_port,123)]
+            elif dst == "00:00:00:00:00:05":        
+                actions = [datapath.ofproto_parser.OFPActionEnqueue(out_port,234)]
+            else:
+                actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
+        else:
+            actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
         
         # install a flow to avoid packet_in next time
         if out_port != ofproto.OFPP_FLOOD and out_port != 0 and dst in self.hosts and src in self.hosts:
@@ -185,15 +203,15 @@ class SimpleSwitch(app_manager.RyuApp):
     def turn_on_off_switch(self):
         # Switch 4 ON-OFF every 60 seconds  
         while True:
-            time.sleep(60)
+            time.sleep(360)
             if self.on_off:
                 print("Switch 4 - OFF")
             else:
                 print("Switch 4 - ON")
             self.on_off = False if self.on_off is True else True
-            
             # Remove flow entries of every switch 
             for dp in self.datapath_list:
+                self.send_queue_stats_request(dp)
                 self.remove_flows(dp,0)
             
             # Because of new topology, reset mac_to_port  
@@ -216,3 +234,18 @@ class SimpleSwitch(app_manager.RyuApp):
         ofproto = datapath.ofproto
         flow_mod = datapath.ofproto_parser.OFPFlowMod(datapath,match,0,ofproto.OFPFC_DELETE,0,0,1,ofproto.OFP_NO_BUFFER,ofproto.OFPP_NONE,0,instructions)
         return flow_mod
+
+    def send_queue_stats_request(self, datapath):
+        ofp = datapath.ofproto
+        ofp_parser = datapath.ofproto_parser
+
+        req = ofp_parser.OFPQueueStatsRequest(datapath, 0, ofp.OFPP_NONE,
+                                            ofp.OFPQ_ALL)
+        datapath.send_msg(req)
+    @set_ev_cls(ofp_event.EventOFPQueueStatsReply, MAIN_DISPATCHER)
+    def stats_reply_handler(self, ev):
+        msg = ev.msg
+        body = ev.msg.body
+        for stat in body:
+            print("QUEUE ID: ", stat.queue_id," --- PORT NUMBER: ",stat.port_no)
+        
