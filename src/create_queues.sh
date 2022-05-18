@@ -39,6 +39,6 @@ queues:123=@1q \
 queues:234=@2q -- \
 --id=@1q create queue other-config:min-rate=1000000 other-config:max-rate=2000000 -- \
 --id=@2q create queue other-config:min-rate=1000000 other-config:max-rate=8000000 
-echo '*** End of Creating the Slices ...'
+echo '*** End of Creating the Queues...'
 echo ' ---------------------------------------------- '
 

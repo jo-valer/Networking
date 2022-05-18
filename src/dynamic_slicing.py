@@ -1,15 +1,3 @@
-# from pickle import FALSE
-# from ssl import OP_ENABLE_MIDDLEBOX_COMPAT
-# from ryu.base import app_manager
-# from ryu.controller import ofp_event
-# from ryu.topology import event,switches
-# from ryu.controller.handler import MAIN_DISPATCHER
-# from ryu.controller.handler import set_ev_cls
-# from ryu.ofproto import ofproto_v1_3, ofproto_v1_3_parser
-# from ryu.lib.mac import haddr_to_bin
-# from ryu.lib.packet import packet
-# from ryu.lib.packet import ethernet
-# from ryu.lib.packet import ether_types
 from re import sub
 from ryu.base import app_manager
 from ryu.controller import ofp_event
@@ -24,7 +12,6 @@ from ryu.lib.packet import ether_types
 from ryu.lib.packet import udp
 from ryu.lib.packet import tcp
 from ryu.lib.packet import icmp
-
 import threading
 import time
 import copy
@@ -33,21 +20,22 @@ import subprocess
 
 class SimpleSwitch(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
-    hosts=["00:00:00:00:00:01","00:00:00:00:00:02","00:00:00:00:00:03","00:00:00:00:00:04","00:00:00:00:00:05","00:00:00:00:00:06","00:00:00:00:00:07"]
+    hosts=["00:00:00:00:00:01","00:00:00:00:00:02","00:00:00:00:00:03","00:00:00:00:00:04","00:00:00:00:00:05"]
 
     def __init__(self, *args, **kwargs):
         super(SimpleSwitch, self).__init__(*args, **kwargs)
         self.exchange = False
-        self.host_slice1 = ["00:00:00:00:00:01","00:00:00:00:00:02","00:00:00:00:00:03","00:00:00:00:00:04"] 
-        self.host_slice2 = ["00:00:00:00:00:05","00:00:00:00:00:06","00:00:00:00:00:07"] 
+        self.host_slice1 = ["00:00:00:00:00:01","00:00:00:00:00:02","00:00:00:00:00:03"] 
+        self.host_slice2 = ["00:00:00:00:00:04","00:00:00:00:00:05"] 
         self.mac_to_port = {
-            1: {"00:00:00:00:00:05":4, "00:00:00:00:00:07":1},
-            2: {"00:00:00:00:00:02":3, "00:00:00:00:00:03":4},
-            3: {"00:00:00:00:00:05":1, "00:00:00:00:00:07":4},
+            1: {"00:00:00:00:00:04":4, "00:00:00:00:00:05":1},
+            2: {"00:00:00:00:00:02":3},
+            3: {"00:00:00:00:00:04":1, "00:00:00:00:00:05":4},
         }
         self.mac_to_port_backup = {
-            1: {"00:00:00:00:00:05":4, "00:00:00:00:00:07":1},
-            3: {"00:00:00:00:00:05":1, "00:00:00:00:00:07":4},
+            1: {"00:00:00:00:00:04":4, "00:00:00:00:00:05":1},
+            2: {"00:00:00:00:00:02":3},
+            3: {"00:00:00:00:00:04":1, "00:00:00:00:00:05":4},
         }
 
         self.slice_to_port = {
@@ -178,7 +166,7 @@ class SimpleSwitch(app_manager.RyuApp):
     def turn_on_off_switch(self):
         # Switch 4 ON-OFF every 60 seconds  
         while True:
-            time.sleep(60)
+            time.sleep(10)
             # Remove flow entries of every switch 
             for dp in self.datapath_list:
                 self.remove_flows(dp,0)
@@ -192,6 +180,7 @@ class SimpleSwitch(app_manager.RyuApp):
             self.on_off = False if self.on_off is True else True
             # Because of new topology, reset mac_to_port  
             self.mac_to_port = copy.deepcopy(self.mac_to_port_backup)   
+            time.sleep(200)
     
     def remove_flows(self, datapath, table_id):
         # Removing all flow entries
