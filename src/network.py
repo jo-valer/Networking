@@ -16,7 +16,6 @@ class NetworkSlicingTopo(Topo):
         # Create template host, switch, and link
         host_config = dict(inNamespace=True)
         http_link_config = dict()
-       # video_link_config = dict(bw=5)
         host_link_config = dict(bw = 10)
 
         # Create switch nodes
@@ -54,8 +53,6 @@ if __name__ == "__main__":
         autoStaticArp=True,
         link=TCLink,
     )
-    # controller = RemoteController("c1", ip="127.0.0.1", port=6633)
-    # net.addController(controller)
     net.build()
     net.start()
     CLI(net)

@@ -166,8 +166,8 @@ class SimpleSwitch(app_manager.RyuApp):
     def turn_on_off_switch(self):
         # Switch 4 ON-OFF every 60 seconds  
         while True:
-            time.sleep(10)
-            # Remove flow entries of every switch 
+            time.sleep(60)
+            # Remove flow entries from every switch 
             for dp in self.datapath_list:
                 self.remove_flows(dp,0)
             self.logger.info("Flow tables deleted")
@@ -180,7 +180,6 @@ class SimpleSwitch(app_manager.RyuApp):
             self.on_off = False if self.on_off is True else True
             # Because of new topology, reset mac_to_port  
             self.mac_to_port = copy.deepcopy(self.mac_to_port_backup)   
-            time.sleep(200)
     
     def remove_flows(self, datapath, table_id):
         # Removing all flow entries
