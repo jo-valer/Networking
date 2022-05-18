@@ -1,16 +1,15 @@
 # Networking
 Softwarized and virtualized mobile networks (aka Networking II) group project's repository.
 
-### Network Slice Setup Optimization
+### Morphing network slices
 
-• GOAL: GOAL: to enable RYU SDN controller to slice the network and then to dynamically re-allocate services in order to maintain desired QoS
+• GOAL: to enable RYU SDN controller to build network slices and dynamically modify their topology
+• To consider that each network node might host«services», that in this case will be represented by virtual switches/routers
+• The SDN controller will not only slice but reprogram connectivity within the slice
 
-• Example 1: migrate a server to maximize throughtput via northbound script
-
-• Example 2: migrate a server to minimize delay via northbound script
 ### Launch
 ````
-ryu-manager slice1.py &
+ryu-manager dynamic_slicing.py &
 sudo python3 network.py
 ````
 ### Shut down network
@@ -27,6 +26,7 @@ h1 ifconfig
 h1 ls // working directory
 h1 ping -c3 h4 // ping 3 packets
 dpctl dump-flows // show flow tables
+iperf h1 h2 // testing TCP bandwidth between h1 and h2
 ````
 
 
