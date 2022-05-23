@@ -1,5 +1,5 @@
 # Networking
-Softwarized and virtualized mobile networks (aka Networking II) group project's repository.
+Softwarized and virtualized mobile networks (aka Networking II) group project's repository 2021/2022.
 
 ### Morphing network slices
 
