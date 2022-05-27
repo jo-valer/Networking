@@ -22,13 +22,13 @@ class SimpleSwitch(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
     hosts=["00:00:00:00:00:01","00:00:00:00:00:02","00:00:00:00:00:03","00:00:00:00:00:04",
             "00:00:00:00:00:05","00:00:00:00:00:06","00:00:00:00:00:07","00:00:00:00:00:08",
-            "00:00:00:00:00:09","00:00:00:00:00:10","00:00:00:00:00:11","00:00:00:00:00:12"]
+            "00:00:00:00:00:09","00:00:00:00:00:0a","00:00:00:00:00:0b","00:00:00:00:00:0c","00:00:00:00:00:0d"]
 
     def __init__(self, *args, **kwargs):
         super(SimpleSwitch, self).__init__(*args, **kwargs)
         self.host_slice1 = ["00:00:00:00:00:01","00:00:00:00:00:02","00:00:00:00:00:03","00:00:00:00:00:04"] 
         self.host_slice2 = ["00:00:00:00:00:05","00:00:00:00:00:06","00:00:00:00:00:07","00:00:00:00:00:08"]
-        self.host_slice3 = ["00:00:00:00:00:09","00:00:00:00:00:10","00:00:00:00:00:11","00:00:00:00:00:12"]
+        self.host_slice3 = ["00:00:00:00:00:09","00:00:00:00:00:0a","00:00:00:00:00:0b","00:00:00:00:00:0c"]
         self.slice_to_port = {
             3: {1:2, 2:1, 3:4, 4:3},
             6: {1:2, 2:1, 3:4, 4:3}
@@ -80,28 +80,29 @@ class SimpleSwitch(app_manager.RyuApp):
         src = eth.src
         dpid = datapath.id
         # Switch 4 is off, packets are dropped 
-        if dst in self.host_slice1:
-            print(dst)
-            print(self.host_slice1)
-        if dpid == 6 and dst in self.hosts:
-            return
+        
+        
 
         self.mac_to_port.setdefault(dpid, {})
 
        # self.logger.info("packet in %s %s %s %s", dpid, src, dst, msg.in_port)
 
         # learn a mac address to avoid FLOOD next time.
+        
         self.mac_to_port[dpid][src] = msg.match["in_port"]
 
         out_port = 0
         if dst in self.mac_to_port[dpid]:
             out_port = self.mac_to_port[dpid][dst]
         else:
+            if(dpid == 6):
+                return
             out_port = ofproto.OFPP_FLOOD
+
 
         # install a flow to avoid packet_in next time
         actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
-        if out_port != ofproto.OFPP_FLOOD and out_port != 0 and dst in self.hosts and src in self.hosts:
+        if out_port != ofproto.OFPP_FLOOD and out_port != 0 and dst in self.hosts and src in self.hosts and ((dpid==6 and (src == "00:00:00:00:00:0d" or dst == "00:00:00:00:00:0d")) or dpid!=6):
             match = datapath.ofproto_parser.OFPMatch(eth_src=src,eth_dst=dst)
             self.add_flow(datapath, 1, match, actions)
             print("ADD FLOW")
