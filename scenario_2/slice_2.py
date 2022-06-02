@@ -30,15 +30,12 @@ class SimpleSwitch(app_manager.RyuApp):
         self.host_slice2 = ["00:00:00:00:00:05","00:00:00:00:00:06","00:00:00:00:00:07","00:00:00:00:00:08"]
         self.host_slice3 = ["00:00:00:00:00:09","00:00:00:00:00:0a","00:00:00:00:00:0b","00:00:00:00:00:0c"]
         self.slice_to_port = {
-            3: {1:2, 2:1, 3:4, 4:3},
-            6: {1:2, 2:1, 3:4, 4:3}
+            2: {2:4, 4:2, 3:0, 1:0},
+            4: {3:1, 1:3, 2:0, 4:0}
         }
         self.mac_to_port = {}
-        self.end_switches = [3,6]
+        self.end_switches = [2,4]
         self.datapath_list = [] 
-        # self.on_off = True
-        # self.thread_on_off = threading.Thread(target = self.turn_on_off_switch,args=(),daemon=True)
-        # self.thread_on_off.start()
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -91,21 +88,21 @@ class SimpleSwitch(app_manager.RyuApp):
         
         self.mac_to_port[dpid][src] = msg.match["in_port"]
 
-        out_port = 0
-        if dst in self.mac_to_port[dpid]:
-            out_port = self.mac_to_port[dpid][dst]
+        if dpid in self.end_switches:
+            out_port = self.slice_to_port[dpid][msg.match["in_port"]]
+        elif dpid in self.mac_to_port:
+            if dst in self.mac_to_port[dpid]:
+                out_port = self.mac_to_port[dpid][dst]
+            else:
+                out_port = ofproto.OFPP_FLOOD
         else:
-            if(dpid == 6):
-                return
             out_port = ofproto.OFPP_FLOOD
-
 
         # install a flow to avoid packet_in next time
         actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
-        if out_port != ofproto.OFPP_FLOOD and out_port != 0 and dst in self.hosts and src in self.hosts and ((dpid==6 and (src == "00:00:00:00:00:0d" or dst == "00:00:00:00:00:0d")) or dpid!=6):
-            match = datapath.ofproto_parser.OFPMatch(eth_src=src,eth_dst=dst)
+        if out_port != ofproto.OFPP_FLOOD and out_port != 0 and dst in self.hosts and src in self.hosts:
+            match = datapath.ofproto_parser.OFPMatch(in_port=msg.match["in_port"],eth_src=src,eth_dst=dst)
             self.add_flow(datapath, 1, match, actions)
-            print("ADD FLOW")
         data = None
         if msg.buffer_id == ofproto.OFP_NO_BUFFER:
             data = msg.data
@@ -142,21 +139,7 @@ class SimpleSwitch(app_manager.RyuApp):
             self.logger.info("port modified %s", port_no)
         else:
             self.logger.info("Illegal port state %s %s", port_no, reason)
-
-    def turn_on_off_switch(self):
-        # Switch 4 ON-OFF every 60 seconds  
-        while True:
-            time.sleep(60)
-            # Remove flow entries from every switch 
-            for dp in self.datapath_list:
-                self.remove_flows(dp,0)
-            self.logger.info("Flow tables deleted")
-
-            if self.on_off:
-                self.logger.info("Slices- ON")
-            else:
-                self.logger.info("Slices - OFF")
-            self.on_off = False if self.on_off is True else True    
+  
     
     def remove_flows(self, datapath, table_id):
         # Removing all flow entries
