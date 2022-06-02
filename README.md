@@ -11,17 +11,33 @@ It might happen that a natural disaster, boycott, or accident leads to irreparab
 
 In such a situation we would like to dynamically change the slices, in order to have _slice_1_ overlay _slice_2_, an so allowing communication between _h4_ and _h5_. Furthermore, we require that the available throughput of switch 2 is 80% dedicated to _slice_2_, since essential services could need even more capability in case of natural disaster.
 
+### Key summary
+- ✅ **Dynamical slices' morphing**
+- ✅ **Essential services have 80% of dedicated throughput**
+
 ### 🖧 Topology
 
-<br><img src="https://github.com/jo-valer/Networking/blob/main/topology_1.jpg" width="50%" height="50%"><br>
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/topology_1.jpg" width="70%" height="70%"><br>
 
 ### ▶️ Demo
 
 ## 📁 <a href="https://github.com/jo-valer/Networking/tree/main/scenario_2">`2nd scenario`</a>
 
-In this second scenario we have the network of
+In this second scenario we have the network of a classroom. When students work on group projects, the different goups can't communicate "_too much_". So there are three slices which are interconnected by a fourth one (let's assume it's the teacher).
 
-<br><img src="https://github.com/jo-valer/Networking/blob/main/topology_2.png" width="50%" height="50%"><br>
+Moreover, not every single packet is allowed to pass through _connect_slice_: in fact there is a maximum amount of UDP packets sendable between slices, and when the threshold is exceeded the UDP packets are discarded.
+
+
+### Key summary
+- ✅ **Connecting SDN slices**
+- ✅ **Stateful packet filtering**: exceeding UDP packets are discarded
+
+### 🖧 Topology
+
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_2/topology_2.png" width="70%" height="70%"><br>
+
+### ▶️ Demo
+
 
 ### Morphing network slices
 
