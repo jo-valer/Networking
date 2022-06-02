@@ -5,9 +5,11 @@ This is the _Softwarized and virtualized mobile networks_ (aka _Networking II_) 
 
 ## 📁 <a href="https://github.com/jo-valer/Networking/tree/main/scenario_1">`1st scenario`</a><br>
 
-<img src="https://github.com/jo-valer/Networking/scenario_2.png" width="100%" height="100%"><br>
+<img src="https://github.com/jo-valer/Networking/blob/main/scenario_1.png" width="100%" height="100%"><br>
 
-## 📁 <a href="https://github.com/jo-valer/Networking/tree/main/scenario_2">`2nd scenario`</a>
+## 📁 <a href="https://github.com/jo-valer/Networking/tree/main/scenario_2">`2nd scenario`</a><br>
+
+<img src="https://github.com/jo-valer/Networking/blob/main/scenario_2.png" width="100%" height="100%"><br>
 
 ### Morphing network slices
 
