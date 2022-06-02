@@ -1,5 +1,13 @@
-# Networking
-Softwarized and virtualized mobile networks (aka Networking II) group project's repository 2021/2022.
+# Networking 2021/2022
+This is the _Softwarized and virtualized mobile networks_ (aka _Networking II_) group project's repository by Daniele Della Pietra, Matteo Mazzonelli, and Giovanni Valer.
+
+ℹ We have implemented two different scenarios, each with its own topology and simulations.
+
+## 📁 <a href="https://github.com/jo-valer/Networking/tree/main/scenario_1">`1st scenario`</a><br>
+
+<img src="https://github.com/jo-valer/Networking/scenario_2.png" width="100%" height="100%"><br>
+
+## 📁 <a href="https://github.com/jo-valer/Networking/tree/main/scenario_2">`2nd scenario`</a>
 
 ### Morphing network slices
 
