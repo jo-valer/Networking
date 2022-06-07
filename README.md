@@ -41,14 +41,14 @@ Let's use the same commands after event: ```SWITCH 4 OFF```
 
 Test reachability by running ```mininet> pingall```
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/pingall_OFF.jpg" width="40%" height="40%"><br>
-As we can see slicing is preserved, citizen can't communicate with essential service and vice versa
+As we can see slicing is preserved, citizens can't communicate with essential service and vice versa
 
 
-Use command ```dpctl dump-flows``` to show the flow tables. Notice that h4 communicates with h5 through citizen's slice
+Use command ```dpctl dump-flows``` to show the flow tables. Notice that h4 communicates with h5 through citizens' slice
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/h4_h5_OFF.jpg" width="120%" height="120%"><br>
 
 
-Test bandwidth of slices with ```iperf```: 80% of available bandwidth is used from essential services and 20% from citizens
+Test bandwidth of slices with ```iperf```: 80% of available bandwidth is used by essential services and 20% by citizens
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/bandwidth_OFF.jpg" width="50%" height="50%"><br>
 
 ## 📁 <a href="https://github.com/jo-valer/Networking/tree/main/scenario_2">`2nd scenario`</a>
