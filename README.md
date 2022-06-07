@@ -37,7 +37,8 @@ Test bandwidth of slices with ```iperf```
 
 
 
-Let's use the same commands after event: SWITCH 4 OFF
+Let's use the same commands after event: ```SWITCH 4 OFF```
+
 Test reachability by running ```mininet> pingall```
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/pingall_OFF.jpg" width="40%" height="40%"><br>
 As we can see slicing is preserved, citizen can't communicate with essential service and vice versa
