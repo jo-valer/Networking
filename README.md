@@ -17,15 +17,30 @@ In such a situation we would like to dynamically change the slices, in order to 
 
 ### 🖧 Topology
 
-<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/topology_1.jpg" width="80%" height="80%"><br>
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/topology_1.jpg" width="80%" height="80%"><br>
 
 ### ▶️ Demo
-After having connected to comnetsemu, launch the network:
-  ```sh
-  ryu-manager dynamic_slicing.py &
-  sudo python3 network.py
+Launch the network:
   ```
-?
+  ryu-manager dynamic_slicing.py & sudo python3 network.py
+  ```
+Test reachability by running ```mininet> pingall```
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/pingall_ON.jpg" width="80%" height="80%"><br>
+Use command ```dpctl dump-flows``` to show the flow tables. Notice that h4 communicates with h5 through switch s4
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/h4_h5_ON.jpg" width="80%" height="80%"><br>
+Test bandwidth of slices with ```iperf```
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/bandwidth_ON.jpg" width="80%" height="80%"><br>
+
+
+Let's use the same commands after event: SWITCH 4 OFF
+Test reachability by running ```mininet> pingall```
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/pingall_OFF.jpg" width="80%" height="80%"><br>
+As we can see slicing is preserved, citizen can't communicate with essential service and vice versa
+
+Use command ```dpctl dump-flows``` to show the flow tables. Notice that h4 communicates with h5 through citizen's slice
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/h4_h5_OFF.jpg" width="80%" height="80%"><br>
+Test bandwidth of slices with ```iperf```: 80% of available bandwidth is used from essential services and 20% from citizens
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/bandwidth_OFF.jpg" width="80%" height="80%"><br>
 
 ## 📁 <a href="https://github.com/jo-valer/Networking/tree/main/scenario_2">`2nd scenario`</a>
 
