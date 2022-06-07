@@ -25,22 +25,22 @@ Launch the network:
   ryu-manager dynamic_slicing.py & sudo python3 network.py
   ```
 Test reachability by running ```mininet> pingall```
-<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/pingall_ON.jpg" width="80%" height="80%"><br>
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/pingall_ON.jpg" width="40%" height="40%"><br>
 Use command ```dpctl dump-flows``` to show the flow tables. Notice that h4 communicates with h5 through switch s4
-<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/h4_h5_ON.jpg" width="80%" height="80%"><br>
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/h4_h5_ON.jpg" width="100%" height="100%"><br>
 Test bandwidth of slices with ```iperf```
-<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/bandwidth_ON.jpg" width="80%" height="80%"><br>
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/bandwidth_ON.jpg" width="40%" height="40%"><br>
 
 
 Let's use the same commands after event: SWITCH 4 OFF
 Test reachability by running ```mininet> pingall```
-<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/pingall_OFF.jpg" width="80%" height="80%"><br>
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/pingall_OFF.jpg" width="40%" height="40%"><br>
 As we can see slicing is preserved, citizen can't communicate with essential service and vice versa
 
 Use command ```dpctl dump-flows``` to show the flow tables. Notice that h4 communicates with h5 through citizen's slice
-<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/h4_h5_OFF.jpg" width="80%" height="80%"><br>
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/h4_h5_OFF.jpg" width="100%" height="100%"><br>
 Test bandwidth of slices with ```iperf```: 80% of available bandwidth is used from essential services and 20% from citizens
-<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/bandwidth_OFF.jpg" width="80%" height="80%"><br>
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/bandwidth_OFF.jpg" width="40%" height="40%"><br>
 
 ## 📁 <a href="https://github.com/jo-valer/Networking/tree/main/scenario_2">`2nd scenario`</a>
 
