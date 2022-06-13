@@ -80,7 +80,7 @@ Moreover, not every single packet is allowed to pass through _connect_slice_: in
 
 ### Launch
 ````
-ryu-manager dynamic_slicing.py &
+ryu-manager connect_slice.py &
 sudo python3 network.py
 ````
 ### Shut down network
