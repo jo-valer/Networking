@@ -25,7 +25,7 @@ Launch network:
   ryu-manager dynamic_slicing.py & sudo python3 network.py
   ```
 
-👉 **BEFORE SWITCH 4 OFF:**
+👉 **WHEN SWITCH IS ON:**
 
 **Test reachability** by running ```mininet> pingall```
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/pingall_ON.jpg" width="40%" height="40%"><br>
@@ -39,7 +39,7 @@ Use command ```dpctl dump-flows``` to show the flow tables. Notice that _h4_ com
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/bandwidth_ON.jpg" width="50%" height="50%"><br>
 
 
-👉 **AFTER SWITCH 4 OFF:**
+👉 **WHEN SWITCH 4 IS UNREACHABLE:**
 
 Let's use the same commands after event: **'Switch 4 – OFF'**
 
