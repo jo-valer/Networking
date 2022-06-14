@@ -80,7 +80,7 @@ Launch network:
 Test reachability by running ```mininet> pingall```
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_2/images/pingall.jpg" width="40%" height="40%"><br>
 
-Use command ```mininet> h1 ping h10``` and ```dpctl dump-flows``` in order to check that packet flow from h1 to h10 pass through the connecting slice (switch 6)
+Use command ```mininet> h1 ping h10``` and ```dpctl dump-flows``` in order to check that packet flow from h1 to h10 through the connecting slice (switch 6)
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_2/images/ping_h1_h10.jpg" width="120%" height="120%"><br>
 
 Send UDP packets from slice 3 to slice 1:
