@@ -139,6 +139,7 @@ class SimpleSwitch(app_manager.RyuApp):
         else:
             self.logger.info("Illegal port state %s %s", port_no, reason)
     
+    
     def remove_flows(self, datapath, table_id):
         # Removing all flow entries
         parser = datapath.ofproto_parser
