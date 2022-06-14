@@ -25,7 +25,7 @@ Launch network:
   ryu-manager dynamic_slicing.py & sudo python3 network.py
   ```
 
-👉 **WHEN SWITCH IS ON:**
+👉 **WHEN SWITCH 4 IS ON:**
 
 **Test reachability** by running ```mininet> pingall```
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/pingall_ON.jpg" width="40%" height="40%"><br>
