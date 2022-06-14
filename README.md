@@ -1,5 +1,5 @@
 # Networking 2021/2022
-This is the _Softwarized and virtualized mobile networks_ (aka _Networking II_) group project's repository by [**Daniele Della Pietra**](https://github.com/dellastone), [**Matteo Mazzonelli**](https://github.com/MatteoMazzonelli), and [**Giovanni Valer**](https://github.com/jo-valer).
+This is the _Softwarized and virtualized mobile networks_ (aka _Networking II_) group project's repository by [**Daniele Della Pietra**](https://github.com/dellastone), [**Matteo Mazzonelli**](https://github.com/MatteoMazzonelli) and [**Giovanni Valer**](https://github.com/jo-valer).
 
 ℹ We have implemented two different scenarios, each with its own topology and simulations.
 
@@ -9,7 +9,7 @@ Here we imagine having a city, whose network is divided in 2 slices: the first (
 
 It might happen that a natural disaster, boycott, or accident leads to irreparable damages to a part of the network (let's imagine switch _s4_ unreachable).
 
-In such a situation we would like to dynamically change the slices, in order to have _slice_1_ overlaying _slice_2_, an so allowing communication between _h4_ and _h5_. Furthermore, we require that the available throughput of switch 2 is 80% dedicated to _slice_2_, since essential services could need even more capability in case of natural disaster.
+In such a situation we would like to dynamically change the slices, in order to have _slice_1_ overlaying _slice_2_, an so allowing communication between _h4_ and _h5_. Furthermore, we require that the available throughput of switch _s2_ is 80% dedicated to _slice_2_, since essential services could need even more capability in case of natural disaster.
 
 ### Key summary
 - ✅ **Dynamical slices' morphing**
