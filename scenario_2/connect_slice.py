@@ -33,11 +33,15 @@ class SimpleSwitch(app_manager.RyuApp):
         self.host_slice1 = ["00:00:00:00:00:01","00:00:00:00:00:02","00:00:00:00:00:03","00:00:00:00:00:04"] 
         self.host_slice2 = ["00:00:00:00:00:05","00:00:00:00:00:06","00:00:00:00:00:07","00:00:00:00:00:08"]
         self.host_slice3 = ["00:00:00:00:00:09","00:00:00:00:00:0a","00:00:00:00:00:0b","00:00:00:00:00:0c"]
-        self.UDPsent =[0,0,0] # 1-2 , 1-3, 2-3  
+        self.UDPsent = [0,0,0] # 1-2 , 1-3, 2-3  
+        self.UDPflag = [False, False, False] # 1-2 , 1-3, 2-3  
+        self.time_window = 60
         self.slice_to_port = {}
         self.mac_to_port = {}
         self.end_switches = []
         self.datapath_list = [] 
+        self.thread_on_off = threading.Thread(target = self.reset_counter,args=(),daemon=True)
+        self.thread_on_off.start()
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -85,23 +89,29 @@ class SimpleSwitch(app_manager.RyuApp):
             protocol = protocol.proto
             if protocol == in_proto.IPPROTO_UDP:
                 if (src in self.host_slice1 and dst in self.host_slice2) or (src in self.host_slice2 and dst in self.host_slice1):
+                    if self.UDPflag[0]:
+                        return
                     self.UDPsent[0] += 1
                     if self.UDPsent[0] > 5000:
-                        print("Too many packet sent slice1-slice2")
+                        print("Too many packet sent between slice1 and slice2 -- time window = ",self.time_window," seconds")
+                        self.UDPflag[0] = True
                         return
-                   # print("Total Byte sent from port ", msg.match["in_port"]," --> ",self.UDPsent[0])
                 if (src in self.host_slice2 and dst in self.host_slice3) or (src in self.host_slice3 and dst in self.host_slice2):
+                    if self.UDPflag[0]:
+                        return
                     self.UDPsent[1] += 1
                     if self.UDPsent[1] > 5000:
-                        print("Too many packet sent slice2-slice3")
+                        print("Too many packet sent between slice2 and slice3 -- time window = ",self.time_window," seconds")
+                        self.UDPflag[1] = True
                         return
-                   # print("Total Byte sent from port ", msg.match["in_port"]," --> ",self.UDPsent[1])
                 if (src in self.host_slice1 and dst in self.host_slice3) or (src in self.host_slice3 and dst in self.host_slice1):
+                    if self.UDPflag[2]:
+                        return
                     self.UDPsent[2] += 1
                     if self.UDPsent[2] > 5000:
-                        print("Too many packet sent slice1-slice3")
+                        print("Too many packet sent between slice1 and slice3 -- time window = ",self.time_window," seconds")
+                        self.UDPflag[2] = True
                         return
-                   # print("Total Byte sent from port ", msg.match["in_port"]," --> ",msg.total_len)
                 
             self.mac_to_port.setdefault(dpid, {})
 
@@ -188,3 +198,10 @@ class SimpleSwitch(app_manager.RyuApp):
                                                       ofproto.OFPG_ANY, 0,
                                                       match, instructions)    
         return flow_mod
+    
+    def reset_counter(self):  
+        while True:
+            time.sleep(self.time_window)
+            self.UDPflag = [False for _ in range(len(self.UDPflag))]
+            self.UDPsent = [0 for _ in range(len(self.UDPsent))]
+            print("Reset UDP counters")  

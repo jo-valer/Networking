@@ -20,7 +20,7 @@ In such a situation we would like to dynamically change the slices, in order to 
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/topology_1.jpg" width="80%" height="80%"><br>
 
 ### ▶️ Demo
-Launch the network:
+Launch network:
   ```
   ryu-manager dynamic_slicing.py & sudo python3 network.py
   ```
@@ -51,6 +51,12 @@ Use command ```dpctl dump-flows``` to show the flow tables. Notice that h4 commu
 Test bandwidth of slices with ```iperf```: 80% of available bandwidth is used by essential services and 20% by citizens
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/bandwidth_OFF.jpg" width="50%" height="50%"><br>
 
+### Shut down network
+````
+exit
+sudo mn -c
+````
+
 ## 📁 <a href="https://github.com/jo-valer/Networking/tree/main/scenario_2">`2nd scenario`</a>
 
 In this second scenario we have the network of a classroom. When students work on group projects, the different goups can't communicate "_too much_". So there are three slices which are interconnected by a fourth one (let's assume it's the teacher).
@@ -64,40 +70,30 @@ Moreover, not every single packet is allowed to pass through _connect_slice_: in
 
 ### 🖧 Topology
 
-<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_2/topology_2.png" width="80%" height="80%"><br>
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_2/images/topology_2.png" width="80%" height="80%"><br>
 
 ### ▶️ Demo
-?
+Launch network:
+  ```
+  ./run_controllers.sh & sudo python3 network.py
+  ```
+Test reachability by running ```mininet> pingall```
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_2/images/pingall.jpg" width="40%" height="40%"><br>
 
+Use command ```mininet> h1 ping h10``` and ```dpctl dump-flows``` in order to check that packet flow from h1 to h10 pass through the connecting slice (switch 6)
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_2/images/ping_h1_h10.jpg" width="120%" height="120%"><br>
 
-### Morphing network slices
+Send UDP packets from slice 3 to slice 1:
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_2/images/test_UDP.jpg" width="50%" height="50%"><br>
+After a certain amount of UDP packets transmitted, switch 6 stops UDP connection between slice 1 and slice 3. This event doesn't affect TCP and ICMP packets' flows.
 
-• GOAL: to enable RYU SDN controller to build network slices and dynamically modify their topology
+Every 60 seconds UDP connections are restored and packets' counters are reset
+<br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_2/images/reset_counter.jpg" width="50%" height="50%"><br>
 
-• To consider that each network node might host«services», that in this case will be represented by virtual switches/routers
-
-• The SDN controller will not only slice but reprogram connectivity within the slice
-
-### Launch
-````
-ryu-manager connect_slice.py &
-sudo python3 network.py
-````
 ### Shut down network
 ````
 exit
 sudo mn -c
-````
-### Commands
-````
-nodes // Available nodes
-links // Show links
-dump // process ID in linux and eth address
-h1 ifconfig 
-h1 ls // working directory
-h1 ping -c3 h4 // ping 3 packets
-dpctl dump-flows // show flow tables
-iperf h1 h2 // testing TCP bandwidth between h1 and h2
 ````
 
 
