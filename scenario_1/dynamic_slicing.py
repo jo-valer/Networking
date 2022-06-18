@@ -166,7 +166,7 @@ class SimpleSwitch(app_manager.RyuApp):
     def turn_on_off_switch(self):
         # Switch 4 ON-OFF every 60 seconds  
         while True:
-            time.sleep(60)
+            time.sleep(150)
             # Remove flow entries from every switch 
             for dp in self.datapath_list:
                 self.remove_flows(dp,0)
