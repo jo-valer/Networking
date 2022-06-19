@@ -32,6 +32,9 @@ Notice that _h4_ communicates with _h5_ through switch _s4_
   ```
   iperf h1 h2
   ```
+  ```
+  iperf h4 h5
+  ```
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/bandwidth_ON.jpg" width="50%" height="50%"><br>
 
 
@@ -63,7 +66,10 @@ Notice that _h4_ communicates with _h5_ through citizens' slice:
 
 **Test bandwidth** of slices:
   ```
-  iperf
+  iperf h1 h2
+  ```
+  ```
+  iperf h4 h5
   ```
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/bandwidth_OFF.jpg" width="50%" height="50%"><br>
 80% of available bandwidth is used by essential services and 20% by citizens, just as desired.
