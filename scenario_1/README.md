@@ -39,7 +39,7 @@ Notice that _h4_ communicates with _h5_ through switch _s4_
 
 Let's use the same commands after event: **'Switch 4 – OFF'**
 
-**Test reachability**
+**Test reachability**:
   ```
   h4 ping -c1 h5
   ```
