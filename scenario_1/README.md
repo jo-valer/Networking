@@ -30,7 +30,7 @@ Notice that _h4_ communicates with _h5_ through switch _s4_
 
 **Test bandwidth** of slices:
   ```
-  iperf
+  iperf h1 h2
   ```
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_1/images/bandwidth_ON.jpg" width="50%" height="50%"><br>
 
