@@ -24,7 +24,7 @@ Send UDP packets from _slice 3_ to _slice 1_:
   ```
 Repeat following command to see how UDP packets are discarded:
   ```
-  h1 iperf -c 10.0.0.1 -u -t 5 -i 1 -l 300 &
+  h10 iperf -c 10.0.0.1 -u -t 5 -i 1 -l 300
   ```
 <br><img src="https://github.com/jo-valer/Networking/blob/main/scenario_2/images/test_UDP.jpg" width="50%" height="50%"><br>
 After a certain amount of UDP packets transmitted, **switch _s6_ stops UDP connection** between _slice 1_ and _slice 3_. This event **doesn't affect TCP and ICMP packets' flows**.
