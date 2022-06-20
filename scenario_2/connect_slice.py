@@ -97,7 +97,7 @@ class SimpleSwitch(app_manager.RyuApp):
                         self.UDPflag[0] = True
                         return
                 if (src in self.host_slice2 and dst in self.host_slice3) or (src in self.host_slice3 and dst in self.host_slice2):
-                    if self.UDPflag[0]:
+                    if self.UDPflag[1]:
                         return
                     self.UDPsent[1] += 1
                     if self.UDPsent[1] > 5000:
