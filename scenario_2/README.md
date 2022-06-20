@@ -3,7 +3,10 @@
 ### ▶️ Demo
 Launch network:
   ```
-  ./run_controllers.sh & sudo python3 network.py
+  ./run_controllers.sh
+  ```
+  ```
+  sudo python3 network.py
   ```
 
 **Test reachability**:
